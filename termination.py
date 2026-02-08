@@ -1,10 +1,8 @@
-from pymoo.termination.max_gen import MaximumGenerationTermination
-from pymoo.termination.robust import RobustTermination
-from pymoo.termination.ftol import MultiObjectiveSpaceTermination
 from pymoo.core.termination import Termination
 
 
 class CombinedTerminationOR(Termination):
+    """Combine several termination conditions using logical OR."""
 
     def __init__(self, terminations):
         super().__init__()

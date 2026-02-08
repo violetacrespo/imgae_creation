@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import datetime
+from pathlib import Path
+
 import numpy as np
 import torch
+from diffusers import StableDiffusionPipeline
 from pymoo.core.problem import ElementwiseProblem
 from diffusers import StableDiffusionPipeline
 from ultralytics import YOLO
@@ -10,7 +13,11 @@ from utils import generar_imagen, analizar_imagen, guardar_zip_contenido, analiz
 from operadores import get_crossover, get_mutation
 
 # Cargar modelos (una sola vez)
-pipe = StableDiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-2-1")
+# Al añadir use_auth_token=True, usará el token con el que hiciste login()
+pipe = StableDiffusionPipeline.from_pretrained(
+    "stabilityai/stable-diffusion-xl-base-1.0", 
+    use_auth_token=True
+)
 pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
 model = YOLO("yolov8n.pt")
 
@@ -79,21 +86,19 @@ class StableDiffusionProblem(ElementwiseProblem):
         if self.save_images:
             image_path = os.path.join(carpeta_salida, f"imagen.png")
             image.save(image_path)
-            fitness_yolo, num_objects = analizar_imagen(model, image_path)
+            fitness_yolo, _ = analizar_imagen(model, str(image_path))
         else:
-            fitness_yolo, num_objects = analizar_imagen_memoria(model, image)
+            fitness_yolo, _ = analizar_imagen_memoria(model, image)
 
-
-        f1=-fitness_yolo
-        f2=iterations
+        f1 = -fitness_yolo
+        f2 = iterations
         g1 = 0.1 - fitness_yolo
 
-                    
         if self.save_images:
             zip_filename = f"{timestamp}.zip"
             guardar_zip_contenido(carpeta_salida, zip_filename)
 
-        out["F"] = np.array([f1,f2])
+        out["F"] = np.array([f1, f2])
         out["G"] = np.array([g1])
 
 
