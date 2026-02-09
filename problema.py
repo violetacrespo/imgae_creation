@@ -10,7 +10,7 @@ from utils import generar_imagen, analizar_imagen, guardar_zip_contenido, analiz
 from operadores import get_crossover, get_mutation
 
 # Cargar modelos (una sola vez)
-pipe = StableDiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-2-1")
+pipe = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5")
 pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
 model = YOLO("yolov8n.pt")
 
