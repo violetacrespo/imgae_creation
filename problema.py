@@ -15,7 +15,7 @@ pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
 model = YOLO("yolov8n.pt")
 
 class StableDiffusionProblem(ElementwiseProblem):
-    def __init__(self, save_images=False, **kwargs):
+    def __init__(self, save_images=False, prompt_parameter=str, **kwargs):
         
         self.save_images = save_images
         
@@ -48,7 +48,7 @@ class StableDiffusionProblem(ElementwiseProblem):
             os.makedirs(self.base_path, exist_ok=True)
 
         # Prompts fijos
-        self.prompt = "golden retriever dog, photograph, digital, color, blended visuals"
+        self.prompt = f"{prompt_parameter}, photograph, digital, color, blended visuals"
         self.negative_prompt = "illustration, painting, drawing, art"
 
     def _evaluate(self, x, out, *args, **kwargs):
